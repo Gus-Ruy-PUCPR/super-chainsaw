@@ -1,0 +1,6 @@
+ics
+playwright
+beautifulsoup4
+requests
+canvasapi
+pyTelegramBotAPI

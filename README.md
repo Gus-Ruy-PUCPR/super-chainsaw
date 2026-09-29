@@ -1,25 +1,22 @@
-Projeto ICS AVA PucPR
+# Projeto ICS AVA PucPR
 
-Este projeto automatiza a leitura de entregas do AVA da PUCPR (Canvas) e gera um arquivo .ics para importar no calendário. O fluxo é simples: acessamos a página, extraímos os nomes e datas, e criamos o arquivo de calendário.
+Este projeto automatiza a leitura de entregas do AVA da PUCPR (Canvas) e gera um arquivo `.ics` para importar no calendário. O fluxo é simples: acessamos a página, extraímos os nomes e datas, e criamos o arquivo de calendário.
 
-📚 Breve Resumo de Python (Para nivelamento do grupo)
+## 📚 Breve Resumo de Python (Para nivelamento do grupo)
 
 Como vimos até Estruturas de Dados na faculdade, vamos usar alguns conceitos de Orientação a Objetos de forma bem prática:
 
-Funções (def): São blocos de código que executam uma tarefa específica e podem ser chamados várias vezes.
+* **Funções (`def`)**: São blocos de código que executam uma tarefa específica e podem ser chamados várias vezes.
+* **Classes**: Funcionam como "moldes" ou "plantas". A biblioteca cria esses moldes para nós (ex: a classe `Event` é o molde para criar um evento genérico).
+* **Métodos**: São as funções que pertencem a um "molde" (Classe). Por exemplo, o método `add()` pertence à classe Calendário e serve para adicionar o evento que criamos lá dentro.
 
-Classes: Funcionam como "moldes" ou "plantas". A biblioteca cria esses moldes para nós (ex: a classe Event é o molde para criar um evento genérico).
-
-Métodos: São as funções que pertencem a um "molde" (Classe). Por exemplo, o método add() pertence à classe Calendário e serve para adicionar o evento que criamos lá dentro.
-
-📅 Biblioteca iCalendar para Python
+## 📅 Biblioteca iCalendar para Python
 
 Usaremos a biblioteca ICS para python.
-
-Documentação → ICS Documentation
+* Documentação → [ICS Documentation](https://pypi.org/project/ics/)
 
 Exemplo de uso:
-
+```py
 # importar apenas as classes Calendar e Event da biblioteca.
 from ics import Calendar, Event
 
@@ -39,21 +36,19 @@ c.events
 with open('my.ics', 'w') as my_file:
     my_file.writelines(c.serialize_iter())
 # and it's done !
-
-
-Para instalar:
-
+```
+* Para instalar:
+```powershell
 $ pip install ics
+```
 
-
-🌐 Biblioteca Playwright (Automação de Navegador)
+## 🌐 Biblioteca Playwright (Automação de Navegador)
 
 Usaremos o Playwright para simular o Google Chrome. Como a PUCPR exige login, ele vai digitar nosso usuário e senha automaticamente e carregar as tarefas.
-
-Documentação → Playwright Documentation
+* Documentação → [Playwright Documentation](https://playwright.dev/python/docs/intro)
 
 Exemplo de uso:
-
+```py
 # Importamos a função de sincronização do navegador
 from playwright.sync_api import sync_playwright
 
@@ -69,22 +64,20 @@ with sync_playwright() as p:
     html = page.content()
 
     browser.close()
-
-
-Para instalar (instala a biblioteca e os navegadores de fundo):
-
+```
+* Para instalar (instala a biblioteca e os navegadores de fundo):
+```powershell
 $ pip install playwright
 $ playwright install chromium
+```
 
-
-🔍 Biblioteca BeautifulSoup4 (Extração de Dados)
+## 🔍 Biblioteca BeautifulSoup4 (Extração de Dados)
 
 Usaremos o BS4 para ler o HTML gigante que o Playwright pegou e encontrar exatamente as "tags" onde estão escritos os nomes das atividades e as datas de entrega.
-
-Documentação → BeautifulSoup Documentation
+* Documentação → [BeautifulSoup Documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
 
 Exemplo de uso:
-
+```py
 from bs4 import BeautifulSoup
 
 # Exemplo de HTML fictício que pegaríamos da página
@@ -97,30 +90,27 @@ soup = BeautifulSoup(html_doc, 'html.parser')
 titulo = soup.find('h1').text
 print(titulo)
 # Resultado esperado no terminal: Trabalho de Python
-
-
-Para instalar:
-
+```
+* Para instalar:
+```powershell
 $ pip install beautifulsoup4
+```
 
+## 🚀 Ambiente de Desenvolvimento Rápido (Deep Freeze)
 
-🚀 Ambiente de Desenvolvimento Rápido (Deep Freeze)
+Como os PCs dos laboratórios da faculdade têm **Deep Freeze** (zeram ao reiniciar), criamos um script para instalar tudo automaticamente.
 
-Como os PCs dos laboratórios da faculdade têm Deep Freeze (zeram ao reiniciar), criamos um script para instalar tudo automaticamente.
-
-1. Arquivo requirements.txt
-
+### 1. Arquivo `requirements.txt`
 Este arquivo diz ao Python quais bibliotecas nosso projeto precisa. Ele deve ficar na pasta raiz com este conteúdo:
-
+```text
 ics
 playwright
 beautifulsoup4
+```
 
-
-2. Script setup.ps1
-
-Crie um arquivo chamado setup.ps1 na mesma pasta do projeto. Ele cria o ambiente virtual (.venv) e instala as bibliotecas:
-
+### 2. Script `setup.ps1`
+Crie um arquivo chamado `setup.ps1` na mesma pasta do projeto. Ele cria o ambiente virtual (`.venv`) e instala as bibliotecas:
+```powershell
 Write-Host "🚀 Iniciando configuração do ambiente..." -ForegroundColor Green
 
 if (-not (Test-Path ".venv")) {
@@ -134,40 +124,38 @@ $venvPython = ".\.venv\Scripts\python.exe"
 & $venvPython -m playwright install chromium
 
 Write-Host "✅ Ambiente pronto! Ative com: .\.venv\Scripts\Activate.ps1" -ForegroundColor Green
+```
 
+### 3. Como usar o `.venv` no dia a dia
+* **Para Entrar (Ativar):**
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  ```
+  *(Se der erro vermelho de permissão, rode isso primeiro: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process` e tente de novo).*
+* **Para Sair (Desativar):**
+  ```powershell
+  deactivate
+  ```
 
-3. Como usar o .venv no dia a dia
-
-Para Entrar (Ativar):
-
-.\.venv\Scripts\Activate.ps1
-
-
-(Se der erro vermelho de permissão, rode isso primeiro: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process e tente de novo).
-
-Para Sair (Desativar):
-
-deactivate
-
-
-🐙 Resumo de Uso: Git e GitHub
+## 🐙 Resumo de Uso: Git e GitHub
 
 Fluxo de trabalho diário no PC da faculdade:
 
-1. Baixar o projeto pela primeira vez (Clonar):
-
+**1. Baixar o projeto pela primeira vez (Clonar):**
+```powershell
 $ git clone https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
 $ cd NOME_DO_REPOSITORIO
+```
 
-
-2. Puxar atualizações do grupo (Fetch e Pull):
-
+**2. Puxar atualizações do grupo (Fetch e Pull):**
+```powershell
 $ git fetch origin
 $ git pull origin main
+```
 
-
-📝 Obs Importante: Configurando seu Usuário no Git
-O que motiva essa necessidade? O Git precisa saber quem está enviando o código. Como o Deep Freeze zera o PC, ele apaga suas configurações. Antes de salvar algo (dar commit), configure:
-
+**📝 Obs Importante: Configurando seu Usuário no Git**
+O que motiva essa necessidade? O Git precisa saber **quem** está enviando o código. Como o *Deep Freeze* zera o PC, ele apaga suas configurações. Antes de salvar algo (dar commit), configure:
+```powershell
 $ git config --global user.name "Seu Nome e Sobrenome"
 $ git config --global user.email "seu.email@exemplo.com"
+```
