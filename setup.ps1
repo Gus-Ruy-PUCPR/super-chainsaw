@@ -1,32 +1,44 @@
-Write-Host "🚀 Iniciando configuração do ambiente de desenvolvimento..." -ForegroundColor Green
+Write-Host "Iniciando configuracao do ambiente de desenvolvimento..." -ForegroundColor Green
 
-# 1. Criação do ambiente virtual .venv (se não existir)
-if (-not (Test-Path ".venv")) {
-    Write-Host "📦 Criando ambiente virtual (.venv)..." -ForegroundColor Yellow
-    python -m venv .venv
+$venvPath = Join-Path -Path $PSScriptRoot -ChildPath ".venv"
+$venvPython = Join-Path -Path $venvPath -ChildPath "Scripts\python.exe"
+
+# 1. Cria o ambiente virtual usando o caminho absoluto
+if (-not (Test-Path $venvPath)) {
+    Write-Host "Criando ambiente virtual (.venv)..." -ForegroundColor Yellow
+    python -m venv $venvPath
 } else {
-    Write-Host "✔ Ambiente virtual (.venv) já existe." -ForegroundColor Cyan
+    Write-Host "Ambiente virtual (.venv) ja existe." -ForegroundColor Cyan
 }
 
-# 2. Definição do caminho do Python e Pip do ambiente virtual
-$venvPython = ".\.venv\Scripts\python.exe"
+# 2. Verifica se funcionou (tenta com 'py' se 'python' falhar)
+if (-not (Test-Path $venvPython)) {
+    Write-Host "ERRO: O comando 'python' falhou. Tentando com 'py'..." -ForegroundColor Red
+    py -m venv $venvPath
+    
+    if (-not (Test-Path $venvPython)) {
+        Write-Host "FALHA: Python nao esta instalado ou nao esta no PATH do Windows." -ForegroundColor Red
+        exit
+    }
+}
 
-# 3. Atualização do Pip
-Write-Host "🔄 Atualizando o pip..." -ForegroundColor Yellow
+# 3. Atualiza o Pip
+Write-Host "Atualizando o pip..." -ForegroundColor Yellow
 & $venvPython -m pip install --upgrade pip --quiet
 
-# 4. Instalação das dependências
-if (Test-Path "requirements.txt") {
-    Write-Host "📥 Instalando dependências a partir do requirements.txt..." -ForegroundColor Yellow
-    & $venvPython -m pip install -r requirements.txt
+# 4. Instala dependencias
+$requirementsPath = Join-Path -Path $PSScriptRoot -ChildPath "requirements.txt"
+if (Test-Path $requirementsPath) {
+    Write-Host "Instalando dependencias do requirements.txt..." -ForegroundColor Yellow
+    & $venvPython -m pip install -r $requirementsPath
 } else {
-    Write-Host "📥 Instalando dependências padrão..." -ForegroundColor Yellow
+    Write-Host "Instalando dependencias padrao..." -ForegroundColor Yellow
     & $venvPython -m pip install ics playwright beautifulsoup4 requests canvasapi
 }
 
-# 5. Instalação dos navegadores do Playwright
-Write-Host "🌐 Instalando navegadores para o Playwright (Chromium)..." -ForegroundColor Yellow
+# 5. Instala o Playwright
+Write-Host "Instalando navegadores do Playwright (Chromium)..." -ForegroundColor Yellow
 & $venvPython -m playwright install chromium
 
-Write-Host "✅ Ambiente pronto para uso!" -ForegroundColor Green
-Write-Host "Para ativar a venv no seu terminal, rode: .\.venv\Scripts\Activate.ps1" -ForegroundColor Cyan
+Write-Host "Ambiente pronto para uso!" -ForegroundColor Green
+Write-Host "Para ativar a venv no terminal, digite: .\.venv\Scripts\Activate.ps1" -ForegroundColor Cyan
