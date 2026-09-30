@@ -1,3 +1,4 @@
 .venv
 requirements.txt
 setup.ps1
+playwright/.auth
