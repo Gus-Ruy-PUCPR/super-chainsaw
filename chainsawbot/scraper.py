@@ -28,15 +28,6 @@ async def login_AVA(page):
                 
         logger.info(TAG + "Succesfully loged on account -> " + email)
 
-# função genérica para mover entre paginas com logs
-async def go_to_course_assignment(page, course: str):
-     await page.goto(course)
-     logger.info(TAG + "Succesfully resdirecto to -> " + course)
-
-# função genérica para retornar o link atual da página
-async def read_course_assignment(page):
-     return await page.locator()
-
 # função inicial do módulo scrpper.py, será chamada em __main__.py para iniciar a sequência de execução da aplicação 
 async def init_scrapper():
     tasks_list = []
@@ -80,10 +71,12 @@ async def init_scrapper():
             
             # Se não achar no aria-label, tenta buscar pelo link da atividade
             if not activity_name:
-                logger.warning(TAG + f"Could not find activity_name by arial-label. Trying by link.")
-                link_ativ = itens.find('a', {'data-testid': lambda x: x and 'course-work-item-link-' in x})
-                activity_name = link_ativ.get_text(strip=True) if link_ativ else "not-found"
-                logger.info(TAG + f"Found activity name by link, name: {activity_name}")
+                try:
+                    logger.warning(TAG + f"Could not find activity_name by arial-label. Trying by link.")
+                    link_ativ = itens.find('a', {'data-testid': lambda x: x and 'course-work-item-link-' in x})
+                    activity_name = link_ativ.get_text(strip=True) if link_ativ else "not-found"
+                except NameError:
+                    logger.error(TAG + f"Could not find activity_name by link. Error: {NameError}")
 
             # Nome do Curso
             curso_span = itens.find('span', class_=lambda x: x and 'svtni9-text' in x)
@@ -94,12 +87,14 @@ async def init_scrapper():
             data_span = itens.find('span', class_=lambda x: x and '152y9kz-text' in x)
             date = data_span.get_text(strip=True) if data_span else "not-found"
             
+            logger.debug(TAG + f"data amanha antes da realocação de 1 dia = {date}")
+            
             # "Amanhã" não é uma data válida, então formatamos em dia/mês/ano hora:minuto
             if 'Amanhã' in date:
                 try:
                     now = datetime.now()
                     logger.info(TAG + str(now))
-                    tomorrow = now + timedelta(days=1, hours=23, minutes=59)
+                    tomorrow = now + timedelta(days=1)
                     logger.info(TAG + str(tomorrow))
                     date = tomorrow.strftime("%d/%m/%Y %H:%M")
                     logger.info(TAG + f"Date formated succesfully to: {date}")
@@ -116,5 +111,5 @@ async def init_scrapper():
                 if task not in tasks_list:
                     tasks_list.append(task)
             
-            for task in tasks_list:
-                logger.debug(f"[{task['date']}] {task['course_name']} - {task['activity_name']}")
+        for task in tasks_list:
+            logger.debug(f"[{task['date']}]\n {task['course_name']}\n {task['activity_name']}\n\n")
