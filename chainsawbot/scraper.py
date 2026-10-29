@@ -28,14 +28,14 @@ async def login_AVA(page):
                 
         logger.info(TAG + "Succesfully loged on account -> " + email)
 
-# função inicial do módulo scrpper.py, será chamada em __main__.py para iniciar a sequência de execução da aplicação 
+# função inicial do módulo scrpper.py, será chamada em app.py para iniciar a sequência de execução da aplicação 
 async def init_scrapper():
     tasks_list = []
     async with async_playwright() as p:
         try: 
             # identificar sistema atual
             if sys.platform == "win32":
-                browser = await p.chromium.launch(headless=True, channel="chrome")
+                browser = await p.chromium.launch(headless=False, channel="chrome")
             else:
                 browser = await p.chromium.launch(headless=False)
                 

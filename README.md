@@ -124,6 +124,10 @@ $venvPython = ".\.venv\Scripts\python.exe"
 & $venvPython -m playwright install chromium
 
 Write-Host "✅ Ambiente pronto! Ative com: .\.venv\Scripts\Activate.ps1" -ForegroundColor Green
+
+Caso o download do Chrominium falhe por conta de certificados incoretos use (PowerShell):
+
+$env:NODE_TLS_REJECT_UNAUTHORIZED="0"
 ```
 
 ### 3. Como usar o `.venv` no dia a dia
