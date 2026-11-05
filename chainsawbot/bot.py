@@ -4,6 +4,7 @@ from discord.ext import commands
 from pathlib import Path
 from dotenv import load_dotenv
 import subprocess
+from scraper import init_scrapper
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -26,16 +27,20 @@ async def atacar(ctx:commands.Context):
     nome = ctx.author.name
     await ctx.send(f"Grrr! Vou te cortar {nome}.  **Sons de Serra**")
 
-
 @bot.command()
 async def atividades(ctx: commands.Context):
-    await ctx.send("Certo! irei cortar a página... **Vrrrm-Vrrrm**")
+    await ctx.send("Certo! Irei cortar a página e buscar as atividades... **Vrrrm-Vrrrm**")
     
-    # Executa o arquivo no sistema e captura o que seria printado no terminal
-    resultado = subprocess.run(["python", "./chainsawbot/scraper.py"], capture_output=True, text=True)
-    
-    # Envia o texto que o scraper gerou
-    await ctx.reply(f" **Cortei tudinho! **\n```text\n{resultado.stdout}\n```")
+    try:
+        # Chama a função do scraper diretamente de forma assíncrona
+        resultado_texto = await init_scrapper()
+        
+        # Envia o texto limpo retornado pelo scraper direto no Discord
+        await ctx.reply(f"**Cortei tudinho! Aqui estão as atividades:**\n\n{resultado_texto}")
+        
+    except Exception as e:
+        await ctx.reply(f"Opa, a serra travou! Ocorreu um erro: ```text\n{e}\n```")
 
-    
+
+
 bot.run(token_Bot)
