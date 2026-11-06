@@ -1,4 +1,5 @@
 .venv
-requirements.txt
-setup.ps1
+.env
 playwright/.auth
+chainsawbot/data/*
+chainsawbot/__pycache__/*

@@ -13,7 +13,7 @@ env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 email = os.getenv("EMAIL_LOGIN")
 senha = os.getenv("SENHA_LOGIN")
-TAG = "SCRAPER: "
+TAG = "SCRAPER:"
 
 # Usa as variaveis em .env para abrir uma pagina no ava da pucpr e logar.
 async def login_AVA(page):
@@ -27,10 +27,10 @@ async def login_AVA(page):
 
         await page.get_by_role("button", name="Sim").click()
                 
-        logger.info(TAG + "Succesfully loged on account -> " + email)
+        logger.info(f"{TAG} Succesfully loged on account -> {email}")
 
 # função inicial do módulo scrpper.py, será chamada em app.py para iniciar a sequência de execução da aplicação 
-async def init_scrapper():
+async def execute_scraper():
     tasks_list = []
     async with async_playwright() as p:
         try: 
@@ -45,7 +45,7 @@ async def init_scrapper():
             page = await context.new_page()
 
         except NameError:
-            logger.error(TAG + NameError)
+            logger.error(f"{TAG} {NameError}")
             return NameError
 
         await login_AVA(page)

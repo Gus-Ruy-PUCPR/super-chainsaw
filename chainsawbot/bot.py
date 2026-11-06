@@ -4,7 +4,7 @@ from discord.ext import commands
 from pathlib import Path
 from dotenv import load_dotenv
 import subprocess
-from scraper import init_scrapper
+from scraper import execute_scapper
 
 env_path = Path(__file__).resolve().parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
@@ -33,14 +33,13 @@ async def atividades(ctx: commands.Context):
     
     try:
         # Chama a função do scraper diretamente de forma assíncrona
-        resultado_texto = await init_scrapper()
+        resultado_texto = await execute_scapper()
         
         # Envia o texto limpo retornado pelo scraper direto no Discord
         await ctx.reply(f"**Cortei tudinho! Aqui estão as atividades:**\n\n{resultado_texto}")
         
     except Exception as e:
         await ctx.reply(f"Opa, a serra travou! Ocorreu um erro: ```text\n{e}\n```")
-
 
 
 bot.run(token_Bot)

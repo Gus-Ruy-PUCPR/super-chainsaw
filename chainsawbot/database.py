@@ -3,7 +3,7 @@ from loguru import logger
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
-FILE_PATH = BASE_DIR / "arquivo.json"
+FILE_PATH = BASE_DIR / "data/arquivo.json"
 TAG = "DATABASE: "
 
 def write(data):
