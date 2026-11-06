@@ -3,6 +3,7 @@ from loguru import logger
 from pathlib import Path
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
+from database import read, write
 from datetime import datetime, timedelta
 
 import os
@@ -72,7 +73,7 @@ async def init_scrapper():
             # Se não achar no aria-label, tenta buscar pelo link da atividade
             if not activity_name:
                 try:
-                    logger.warning(TAG + f"Could not find activity_name by arial-label. Trying by link.")
+                    # logger.warning(TAG + f"Could not find activity_name by arial-label. Trying by link.")
                     link_ativ = itens.find('a', {'data-testid': lambda x: x and 'course-work-item-link-' in x})
                     activity_name = link_ativ.get_text(strip=True) if link_ativ else "not-found"
                 except NameError:
@@ -87,17 +88,17 @@ async def init_scrapper():
             data_span = itens.find('span', class_=lambda x: x and '152y9kz-text' in x)
             date = data_span.get_text(strip=True) if data_span else "not-found"
             
-            logger.debug(TAG + f"data amanha antes da realocação de 1 dia = {date}")
+            # logger.debug(TAG + f"data amanha antes da realocação de 1 dia = {date}")
             
             # "Amanhã" não é uma data válida, então formatamos em dia/mês/ano hora:minuto
             if 'Amanhã' in date:
                 try:
                     now = datetime.now()
-                    logger.info(TAG + str(now))
+                    # logger.info(TAG + str(now))
                     tomorrow = now + timedelta(days=1)
-                    logger.info(TAG + str(tomorrow))
+                    # logger.info(TAG + str(tomorrow))
                     date = tomorrow.strftime("%d/%m/%Y %H:%M")
-                    logger.info(TAG + f"Date formated succesfully to: {date}")
+                    # logger.info(TAG + f"Date formated succesfully to: {date}")
                     
                 except(NameError):
                     logger.error(TAG + NameError)
@@ -110,6 +111,9 @@ async def init_scrapper():
                 }
                 if task not in tasks_list:
                     tasks_list.append(task)
-            
-        for task in tasks_list:
+        
+        write(tasks_list)
+        data = read()
+        
+        for task in data:
             logger.debug(f"[{task['date']}]\n {task['course_name']}\n {task['activity_name']}\n\n")
