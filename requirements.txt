@@ -6,3 +6,4 @@ canvasapi
 pyTelegramBotAPI
 dotenv
 loguru
+discord
